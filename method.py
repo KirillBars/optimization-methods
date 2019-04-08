@@ -1,3 +1,5 @@
+import random
+
 class Method():
     def __init__(self, x1min, x2min, x1max, x2max, step, y, excpts):
         '''инициализирует атрибуты метода'''
@@ -28,9 +30,6 @@ class Method():
         self.spis[int(self.lines)][0] = 'x1/x2'
 
     def y_func(self, x1, x2):
-        '''Определение функции !!!пробник!!!'''
-        # self.y = x1*x1 + x2*x2 - 2.4*x1 - 5.6*x2
-        # return float(format(self.y, '.2f'))
         return float(format(eval(self.y), '.2f'))
     
     def setting_midle_spis(self):
@@ -44,7 +43,7 @@ class Method():
                self.exception(x1, x2, line, column)
 
     def bool_matrix(self):
-        '''Создание булевой матрицы (только для консоли)'''
+        '''Создание булевой матрицы'''
         self.boolean_matrix = [[False for i in range(int(self.columns + 1))] for j in range(int(self.lines))] 
 
     def exception(self, x1, x2, row, col):
@@ -71,3 +70,50 @@ class Method():
             return
 
         return self.min, self.spis[imin][0], self.spis[int(self.lines)][jmin]
+
+class MonteCarlo():
+    def __init__(self, x1min, x1max, x2min, x2max, count_step, y, excpts):
+        '''инициализирует атрибуты метода'''
+        self.x1min = x1min
+        self.x2min = x2min
+        self.x1max = x1max
+        self.x2max = x2max
+        self.count_step = count_step
+        self.y = y
+        self.excpts = excpts
+        self.min = 999999
+        self.imin = 0
+        self.jmin = 0
+        self.kol = 0
+    
+    def rand(self):
+        x1 = random.randint(-10, 40) / 10
+        x2 = random.randint(-10, 40) / 10
+
+        return x1, x2
+
+    def y_func(self, x1, x2):
+        return float(format(eval(self.y), '.2f'))
+
+    def exception(self, x1, x2):
+        '''Проверка ограничений'''
+        for i in self.excpts:
+            if not eval(i):
+                return False
+        return True
+
+
+    def func(self, x1, x2):
+        if self.exception(x1, x2):
+            func_x1_x2 = self.y_func(x1, x2)
+            self.kol += 1
+            if self.min > func_x1_x2:
+                self.min = func_x1_x2
+                self.imin = x1
+                self.jmin = x2
+
+    def get_min(self):
+        return self.min, self.imin, self.jmin, self.kol
+
+
+    
